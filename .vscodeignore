@@ -1,0 +1,8 @@
+.vscode/**
+tests/**
+native/**
+scripts/**
+docs/**
+examples/**
+.gitignore
+*.zip

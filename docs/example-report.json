@@ -1,0 +1,612 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-22T06:58:43.575Z",
+  "scope": "latest-completed-scan-of-currently-open-cpp-documents",
+  "counting": {
+    "unit": "distinct finding in the current document version",
+    "primaryLocation": "innermost recognized construct; memory leaks use the allocation site",
+    "percentOfTypeDenominator": "all findings of the same type",
+    "percentOfAllDenominator": "all findings of both types",
+    "repeatedScansAccumulate": false
+  },
+  "totals": {
+    "documents": 1,
+    "findings": 4,
+    "memoryLeaks": 2,
+    "sqlInjections": 2
+  },
+  "rows": [
+    {
+      "type": "memory-leak",
+      "location": "for",
+      "label": "For loop",
+      "count": 1,
+      "percentOfType": 50,
+      "percentOfAll": 25
+    },
+    {
+      "type": "memory-leak",
+      "location": "while",
+      "label": "While loop",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "do-while",
+      "label": "Do / while loop",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "if",
+      "label": "If branch",
+      "count": 1,
+      "percentOfType": 50,
+      "percentOfAll": 25
+    },
+    {
+      "type": "memory-leak",
+      "location": "else",
+      "label": "Else branch",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "case",
+      "label": "Switch case",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "default",
+      "label": "Switch default",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "switch",
+      "label": "Switch condition / body",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "try",
+      "label": "Try block",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "catch",
+      "label": "Catch block",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "function",
+      "label": "Function body",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "memory-leak",
+      "location": "global-or-unknown",
+      "label": "Global / unrecognized",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "for",
+      "label": "For loop",
+      "count": 1,
+      "percentOfType": 50,
+      "percentOfAll": 25
+    },
+    {
+      "type": "sql-injection",
+      "location": "while",
+      "label": "While loop",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "do-while",
+      "label": "Do / while loop",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "if",
+      "label": "If branch",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "else",
+      "label": "Else branch",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "case",
+      "label": "Switch case",
+      "count": 1,
+      "percentOfType": 50,
+      "percentOfAll": 25
+    },
+    {
+      "type": "sql-injection",
+      "location": "default",
+      "label": "Switch default",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "switch",
+      "label": "Switch condition / body",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "try",
+      "label": "Try block",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "catch",
+      "label": "Catch block",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "function",
+      "label": "Function body",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    },
+    {
+      "type": "sql-injection",
+      "location": "global-or-unknown",
+      "label": "Global / unrecognized",
+      "count": 0,
+      "percentOfType": 0,
+      "percentOfAll": 0
+    }
+  ],
+  "findings": [
+    {
+      "confidence": "heuristic",
+      "contexts": [
+        "function",
+        "switch",
+        "case"
+      ],
+      "cwe": "CWE-89",
+      "endByte": 615,
+      "evidence": "potentially untrusted function parameter 'username' (configured assumption)",
+      "id": "sql.tainted-query:604",
+      "line": 20,
+      "message": "Possible SQL injection: input-derived data reaches the SQL text passed to mysql_query. Use a fixed query with bound parameters.",
+      "primaryContext": "case",
+      "ruleId": "sql.tainted-query",
+      "severity": "warning",
+      "startByte": 604,
+      "type": "sql-injection",
+      "filePath": "examples/vulnerable.cpp",
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "documentVersion": 1
+    },
+    {
+      "confidence": "heuristic",
+      "contexts": [
+        "function",
+        "for"
+      ],
+      "cwe": "CWE-89",
+      "endByte": 796,
+      "evidence": "potentially untrusted function parameter 'username' (configured assumption)",
+      "id": "sql.tainted-query:785",
+      "line": 28,
+      "message": "Possible SQL injection: input-derived data reaches the SQL text passed to mysql_query. Use a fixed query with bound parameters.",
+      "primaryContext": "for",
+      "ruleId": "sql.tainted-query",
+      "severity": "warning",
+      "startByte": 785,
+      "type": "sql-injection",
+      "filePath": "examples/vulnerable.cpp",
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "documentVersion": 1
+    },
+    {
+      "confidence": "heuristic",
+      "contexts": [
+        "function",
+        "if"
+      ],
+      "cwe": "CWE-401",
+      "endByte": 416,
+      "evidence": "Allocation uses new. Review ownership and all cleanup paths.",
+      "id": "memory.unreleased:413",
+      "line": 14,
+      "message": "Possible memory leak: 'branchAllocation' may remain allocated. No modeled release or ownership transfer was found on an explored path.",
+      "primaryContext": "if",
+      "relatedLocation": {
+        "contexts": [
+          "function"
+        ],
+        "endByte": 870,
+        "line": 30,
+        "message": "Possible path exits or loses ownership here.",
+        "startByte": 869
+      },
+      "ruleId": "memory.unreleased",
+      "severity": "warning",
+      "startByte": 413,
+      "type": "memory-leak",
+      "filePath": "examples/vulnerable.cpp",
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "documentVersion": 1
+    },
+    {
+      "confidence": "heuristic",
+      "contexts": [
+        "function",
+        "for"
+      ],
+      "cwe": "CWE-401",
+      "endByte": 316,
+      "evidence": "Allocation uses new. Review ownership and all cleanup paths.",
+      "id": "memory.unreleased:313",
+      "line": 10,
+      "message": "Possible memory leak: 'loopAllocation' may remain allocated. No modeled release or ownership transfer was found on an explored path.",
+      "primaryContext": "for",
+      "relatedLocation": {
+        "contexts": [
+          "function"
+        ],
+        "endByte": 870,
+        "line": 30,
+        "message": "Possible path exits or loses ownership here.",
+        "startByte": 869
+      },
+      "ruleId": "memory.unreleased",
+      "severity": "warning",
+      "startByte": 313,
+      "type": "memory-leak",
+      "filePath": "examples/vulnerable.cpp",
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "documentVersion": 1
+    }
+  ],
+  "documents": [
+    {
+      "analysis": {
+        "analysisKind": "heuristic-static-analysis",
+        "engine": "cpp-security-workbench/0.1",
+        "functionsAnalyzed": 1,
+        "notes": [
+          "Preprocessor directives are skipped; macros and conditional compilation are not evaluated."
+        ],
+        "schemaVersion": 1,
+        "truncated": false
+      },
+      "findings": [
+        {
+          "confidence": "heuristic",
+          "contexts": [
+            "function",
+            "switch",
+            "case"
+          ],
+          "cwe": "CWE-89",
+          "endByte": 615,
+          "evidence": "potentially untrusted function parameter 'username' (configured assumption)",
+          "id": "sql.tainted-query:604",
+          "line": 20,
+          "message": "Possible SQL injection: input-derived data reaches the SQL text passed to mysql_query. Use a fixed query with bound parameters.",
+          "primaryContext": "case",
+          "ruleId": "sql.tainted-query",
+          "severity": "warning",
+          "startByte": 604,
+          "type": "sql-injection"
+        },
+        {
+          "confidence": "heuristic",
+          "contexts": [
+            "function",
+            "for"
+          ],
+          "cwe": "CWE-89",
+          "endByte": 796,
+          "evidence": "potentially untrusted function parameter 'username' (configured assumption)",
+          "id": "sql.tainted-query:785",
+          "line": 28,
+          "message": "Possible SQL injection: input-derived data reaches the SQL text passed to mysql_query. Use a fixed query with bound parameters.",
+          "primaryContext": "for",
+          "ruleId": "sql.tainted-query",
+          "severity": "warning",
+          "startByte": 785,
+          "type": "sql-injection"
+        },
+        {
+          "confidence": "heuristic",
+          "contexts": [
+            "function",
+            "if"
+          ],
+          "cwe": "CWE-401",
+          "endByte": 416,
+          "evidence": "Allocation uses new. Review ownership and all cleanup paths.",
+          "id": "memory.unreleased:413",
+          "line": 14,
+          "message": "Possible memory leak: 'branchAllocation' may remain allocated. No modeled release or ownership transfer was found on an explored path.",
+          "primaryContext": "if",
+          "relatedLocation": {
+            "contexts": [
+              "function"
+            ],
+            "endByte": 870,
+            "line": 30,
+            "message": "Possible path exits or loses ownership here.",
+            "startByte": 869
+          },
+          "ruleId": "memory.unreleased",
+          "severity": "warning",
+          "startByte": 413,
+          "type": "memory-leak"
+        },
+        {
+          "confidence": "heuristic",
+          "contexts": [
+            "function",
+            "for"
+          ],
+          "cwe": "CWE-401",
+          "endByte": 316,
+          "evidence": "Allocation uses new. Review ownership and all cleanup paths.",
+          "id": "memory.unreleased:313",
+          "line": 10,
+          "message": "Possible memory leak: 'loopAllocation' may remain allocated. No modeled release or ownership transfer was found on an explored path.",
+          "primaryContext": "for",
+          "relatedLocation": {
+            "contexts": [
+              "function"
+            ],
+            "endByte": 870,
+            "line": 30,
+            "message": "Possible path exits or loses ownership here.",
+            "startByte": 869
+          },
+          "ruleId": "memory.unreleased",
+          "severity": "warning",
+          "startByte": 313,
+          "type": "memory-leak"
+        }
+      ],
+      "locationBasis": "innermost recognized construct at the finding's primary source location; memory leaks use the allocation site",
+      "memoryLeakCount": 2,
+      "rows": [
+        {
+          "count": 1,
+          "location": "for",
+          "percentOfAll": 25,
+          "percentOfType": 50,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "while",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "do-while",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 1,
+          "location": "if",
+          "percentOfAll": 25,
+          "percentOfType": 50,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "else",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "case",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "default",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "switch",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "try",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "catch",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "function",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 0,
+          "location": "global-or-unknown",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "memory-leak"
+        },
+        {
+          "count": 1,
+          "location": "for",
+          "percentOfAll": 25,
+          "percentOfType": 50,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "while",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "do-while",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "if",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "else",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 1,
+          "location": "case",
+          "percentOfAll": 25,
+          "percentOfType": 50,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "default",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "switch",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "try",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "catch",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "function",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        },
+        {
+          "count": 0,
+          "location": "global-or-unknown",
+          "percentOfAll": 0,
+          "percentOfType": 0,
+          "type": "sql-injection"
+        }
+      ],
+      "schemaVersion": 1,
+      "sqlInjectionCount": 2,
+      "totalFindings": 4,
+      "filePath": "examples/vulnerable.cpp",
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "documentVersion": 1,
+      "analyzedAt": "2026-09-22T06:58:43.574Z",
+      "sourceHash": "c2b39a3f6d35f96d85956de20230a428e5ffeb7ae7efd1a33c4c1f6b46f5b3f2"
+    }
+  ],
+  "documentStatuses": [
+    {
+      "documentUri": "file:///example-project/examples/vulnerable.cpp",
+      "filePath": "examples/vulnerable.cpp",
+      "version": 1,
+      "state": "complete"
+    }
+  ]
+}

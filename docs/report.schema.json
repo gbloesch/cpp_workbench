@@ -1,0 +1,339 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "C++ Security Workbench pattern report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "scope",
+    "counting",
+    "totals",
+    "rows",
+    "findings",
+    "documents",
+    "documentStatuses"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "scope": {
+      "const": "latest-completed-scan-of-currently-open-cpp-documents"
+    },
+    "counting": {
+      "type": "object"
+    },
+    "totals": {
+      "type": "object",
+      "required": [
+        "documents",
+        "findings",
+        "memoryLeaks",
+        "sqlInjections"
+      ],
+      "properties": {
+        "documents": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "findings": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "memoryLeaks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "sqlInjections": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "rows": {
+      "type": "array",
+      "minItems": 24,
+      "maxItems": 24,
+      "items": {
+        "$ref": "#/$defs/row"
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/finding"
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "documentUri",
+          "filePath",
+          "documentVersion",
+          "rows",
+          "findings",
+          "analysis"
+        ],
+        "properties": {
+          "documentUri": {
+            "type": "string"
+          },
+          "filePath": {
+            "type": "string"
+          },
+          "documentVersion": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "rows": {
+            "type": "array"
+          },
+          "findings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/finding"
+            }
+          },
+          "analysis": {
+            "type": "object"
+          }
+        }
+      }
+    },
+    "documentStatuses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "documentUri",
+          "filePath",
+          "state"
+        ],
+        "properties": {
+          "state": {
+            "enum": [
+              "pending",
+              "analyzing",
+              "complete",
+              "failed",
+              "skipped"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "row": {
+      "type": "object",
+      "required": [
+        "type",
+        "location",
+        "label",
+        "count",
+        "percentOfType",
+        "percentOfAll"
+      ],
+      "properties": {
+        "type": {
+          "enum": [
+            "memory-leak",
+            "sql-injection"
+          ]
+        },
+        "location": {
+          "enum": [
+            "for",
+            "while",
+            "do-while",
+            "if",
+            "else",
+            "case",
+            "default",
+            "switch",
+            "try",
+            "catch",
+            "function",
+            "global-or-unknown"
+          ]
+        },
+        "label": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "percentOfType": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "percentOfAll": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      },
+      "additionalProperties": false
+    },
+    "finding": {
+      "type": "object",
+      "required": [
+        "id",
+        "ruleId",
+        "type",
+        "cwe",
+        "confidence",
+        "message",
+        "startByte",
+        "endByte",
+        "line",
+        "contexts",
+        "primaryContext"
+      ],
+      "properties": {
+        "startByte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endByte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "for",
+              "while",
+              "do-while",
+              "if",
+              "else",
+              "case",
+              "default",
+              "switch",
+              "try",
+              "catch",
+              "function",
+              "global-or-unknown"
+            ]
+          }
+        },
+        "id": {
+          "type": "string"
+        },
+        "ruleId": {
+          "type": "string"
+        },
+        "type": {
+          "enum": [
+            "memory-leak",
+            "sql-injection"
+          ]
+        },
+        "cwe": {
+          "enum": [
+            "CWE-401",
+            "CWE-89"
+          ]
+        },
+        "confidence": {
+          "const": "heuristic"
+        },
+        "severity": {
+          "const": "warning"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "primaryContext": {
+          "enum": [
+            "for",
+            "while",
+            "do-while",
+            "if",
+            "else",
+            "case",
+            "default",
+            "switch",
+            "try",
+            "catch",
+            "function",
+            "global-or-unknown"
+          ]
+        },
+        "relatedLocation": {
+          "$ref": "#/$defs/location"
+        },
+        "filePath": {
+          "type": "string"
+        },
+        "documentUri": {
+          "type": "string"
+        },
+        "documentVersion": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "required": [
+        "startByte",
+        "endByte",
+        "line"
+      ],
+      "properties": {
+        "startByte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "endByte": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "message": {
+          "type": "string"
+        },
+        "contexts": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "for",
+              "while",
+              "do-while",
+              "if",
+              "else",
+              "case",
+              "default",
+              "switch",
+              "try",
+              "catch",
+              "function",
+              "global-or-unknown"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

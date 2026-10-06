@@ -1,0 +1,49 @@
+{
+  "name": "cpp-security-workbench",
+  "displayName": "C++ Security Workbench",
+  "description": "Local C++ SQL-injection and memory-leak review with location-pattern reports.",
+  "version": "0.1.0",
+  "publisher": "local-capstone",
+  "license": "MIT",
+  "engines": { "vscode": "^1.85.0", "node": ">=20" },
+  "categories": ["Linters", "Other"],
+  "main": "./src/extension.js",
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onLanguage:cpp"],
+  "capabilities": {
+    "untrustedWorkspaces": { "supported": false, "description": "This extension launches its local C++ analysis programs." },
+    "virtualWorkspaces": { "supported": false }
+  },
+  "scripts": {
+    "build": "node scripts/build.js",
+    "compile": "node scripts/build.js",
+    "check": "node scripts/check.js",
+    "test": "node --test"
+  },
+  "contributes": {
+    "commands": [
+      { "command": "cppSecurity.scan", "title": "C++ Security: Analyze Current File", "icon": "$(shield)" },
+      { "command": "cppSecurity.website", "title": "C++ Security: Open Website", "icon": "$(globe)" },
+      { "command": "cppSecurity.patterns", "title": "C++ Security: View Patterns", "icon": "$(graph)" },
+      { "command": "cppSecurity.export", "title": "C++ Security: Export Patterns JSON" },
+      { "command": "cppSecurity.snapshots", "title": "C++ Security: Open Snapshot Folder" }
+    ],
+    "menus": {
+      "editor/title": [
+        { "command": "cppSecurity.scan", "when": "editorLangId == cpp", "group": "navigation@10" },
+        { "command": "cppSecurity.website", "when": "editorLangId == cpp", "group": "navigation@11" },
+        { "command": "cppSecurity.patterns", "when": "editorLangId == cpp", "group": "navigation@12" }
+      ]
+    },
+    "configuration": {
+      "title": "C++ Security Workbench",
+      "properties": {
+        "cppSecurity.scanIntervalMs": { "type": "integer", "default": 500, "minimum": 100, "maximum": 60000, "description": "Milliseconds between checks for changed open C++ documents. Applies immediately." },
+        "cppSecurity.websiteUrl": { "type": "string", "default": "https://example.com", "description": "Website opened by the globe button. Replace this with your project's HTTP(S) URL." },
+        "cppSecurity.enabled": { "type": "boolean", "default": true, "description": "Automatically analyze changed open C++ files. The Analyze button still works when this is off." },
+        "cppSecurity.maxFileBytes": { "type": "integer", "default": 524288, "minimum": 1024, "maximum": 1048576, "description": "Largest UTF-8 snapshot to analyze; oversized documents are reported as skipped." },
+        "cppSecurity.analysisTimeoutMs": { "type": "integer", "default": 10000, "minimum": 1000, "maximum": 60000, "description": "Timeout for each C++ analyzer process." }
+      }
+    }
+  }
+}

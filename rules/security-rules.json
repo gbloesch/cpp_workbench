@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "sqlEnabled": true,
+  "memoryEnabled": true,
+  "treatParametersAsInput": true,
+  "inputFunctions": ["getenv", "getchar", "gets", "fgets", "read", "recv"],
+  "sqlSinks": [
+    { "name": "mysql_query", "queryArgument": 1 },
+    { "name": "mysql_real_query", "queryArgument": 1 },
+    { "name": "mysql_stmt_prepare", "queryArgument": 1 },
+    { "name": "sqlite3_exec", "queryArgument": 1 },
+    { "name": "sqlite3_prepare_v2", "queryArgument": 1 },
+    { "name": "sqlite3_prepare_v3", "queryArgument": 1 },
+    { "name": "PQexec", "queryArgument": 1 },
+    { "name": "PQexecParams", "queryArgument": 1 },
+    { "name": "PQprepare", "queryArgument": 2 }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Build C++ analyzers", "type": "process", "command": "node", "args": ["scripts/build.js"], "options": { "cwd": "${workspaceFolder}" }, "problemMatcher": [] },
+    { "label": "Check extension", "type": "process", "command": "node", "args": ["scripts/check.js"], "options": { "cwd": "${workspaceFolder}" }, "problemMatcher": [] }
+  ]
+}
