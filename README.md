@@ -4,9 +4,9 @@ C++ Security Workbench is a VS Code project that performs basic static analysis 
 
 The current version focuses on:
 
-SQL injection
-Memory leaks
-Where each finding appears in the code
+- SQL injection
+- Memory leaks
+- Where each finding appears in the code
 
 The code is analyzed without being executed.
 
@@ -14,13 +14,13 @@ The code is analyzed without being executed.
 
 The analyzer looks for SQL queries that use user-controlled input.
 
-string concatenation
-`+=`
-`if` statements
-loops
-switch cases
+- string concatenation
+- `+=`
+- `if` statements
+- loops
+- switch cases
 
-SQL findings can also include severity and a suggested fix, such as using a parameterized query.
+SQL findings can also include a suggested fix, such as using a parameterized query.
 
 ## Memory Leaks
 
@@ -63,16 +63,16 @@ The pattern analyzer records where each finding occurs.
 
 Examples of locations include:
 
-for
-while
-if
-else
-case
-switch
-try
-catch
-function
-global-or-unknown
+- for
+- while
+- if
+- else
+- case
+- switch
+- try
+- catch
+- function
+- global-or-unknown
 
 
 It also reports counts and percentages for SQL injection and memory leak findings.
@@ -102,16 +102,16 @@ examples/
 ## Build
 Analyzers are written in C++17 and can be compiled with any compatible compiler.
 
-Option 1: use Make
+- Option 1: use Make
     if make is installed:
     make
 
-Option 2: Compile Manually
+- Option 2: Compile Manually
     Compile Directly with: 
     g++ -std=c++17 native/security_analyzer.cpp -o bin/win32-x64/security_analyzer.exe
     g++ -std=c++17 native/pattern_analyzer.cpp -o bin/win32-x64/pattern_analyzer.exe
 
-Option 3: Using Node
+- Option 3: Using Node
     node scripts/build.js
 
 To run the VS Code extension:
@@ -130,10 +130,10 @@ This is a prototype static analyzer and does not fully understand every C++ feat
 
 Some current limitations include:
 
-limited testing examples
-macros
-advanced pointer behavior
-multi-file analysis
-complex SQL sanitization
+- limited testing examples
+- macros
+- advanced pointer behavior
+- multi-file analysis
+- complex SQL sanitization
 
 The goal is to detect common security patterns and show the results clearly inside VS Code.
