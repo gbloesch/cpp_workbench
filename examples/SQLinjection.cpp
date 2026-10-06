@@ -1,4 +1,4 @@
-// This file contains examples of SQL injection vulnerabilities.
+// Examples of SQL injection vulnerabilities
 
 #include <string>
 
@@ -71,4 +71,11 @@ void sqlExamples(MYSQL* db, const std::string& username, int choice) {
         "SELECT * FROM users WHERE active=1";
 
     mysql_query(db, safeQuery.c_str());
+
+
+    //Unsafe Code (live demo)
+
+    //Safe Code (live demo)
+
+
 }
