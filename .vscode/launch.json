@@ -5,8 +5,7 @@
       "name": "Run C++ Security Workbench",
       "type": "extensionHost",
       "request": "launch",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "${workspaceFolder}/examples"],
-      "preLaunchTask": "Check extension"
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}", "${workspaceFolder}/examples"]
     }
   ]
 }

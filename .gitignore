@@ -3,5 +3,6 @@ node_modules/
 *.vsix
 *.obj
 *.o
+*.exe
 demo-output/
 security-patterns.json

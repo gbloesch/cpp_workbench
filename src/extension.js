@@ -5,28 +5,36 @@ const path = require('node:path');
 const { AnalysisPipeline, byteOffsetToUtf16 } = require('./pipeline');
 const { aggregate, renderPatterns } = require('./reports');
 
-async function activate(context) {
+async function activate(context) 
+{
   const output = vscode.window.createOutputChannel('C++ Security Workbench');
   const diagnostics = vscode.languages.createDiagnosticCollection('cpp-security-workbench');
   const status = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 30);
   status.command = 'cppSecurity.patterns'; status.text = '$(shield) C++ Security'; status.tooltip = 'View security patterns'; status.show();
+  
   context.subscriptions.push(output, diagnostics, status);
   // Each VS Code extension host gets its own directory, so two windows do not
   // delete each other's snapshots. Remove only abandoned host sessions.
+  
   const storageRoot = context.globalStorageUri.fsPath;
   await fs.mkdir(storageRoot, { recursive: true });
-  for (const name of await fs.readdir(storageRoot)) {
+  
+  for (const name of await fs.readdir(storageRoot)) 
+    {
     const match = /^session-(\d+)$/.exec(name);
     if (!match || Number(match[1]) === process.pid) continue;
     try { process.kill(Number(match[1]), 0); }
     catch (error) { if (error.code === 'ESRCH') await fs.rm(path.join(storageRoot, name), { recursive: true, force: true }); }
   }
+
   const storage = path.join(storageRoot, `session-${process.pid}`);
   await fs.mkdir(storage, { recursive: true });
   // This is a current-session report, not a history of users' source code.
   await Promise.all(['jobs', 'snapshots'].map(name => fs.rm(path.join(storage, name), { recursive: true, force: true })));
+
   const pipeline = new AnalysisPipeline(context.extensionPath, storage);
   const reports = new Map(), states = new Map(), seen = new Map(), queue = new Map();
+  const manualScans = new Set();
   let panel, timer, refreshTimer, running = false, disposed = false, activeController;
   let errorNotified = false;
   const configuration = () => vscode.workspace.getConfiguration('cppSecurity');
@@ -99,6 +107,17 @@ async function activate(context) {
           reports.set(key, job.report);
           states.set(key, { documentUri: key, filePath: doc.fileName, version, state: 'complete', analyzedAt: job.report.analyzedAt });
           publishDiagnostics(doc, source, job.report);
+
+          if (manualScans.has(key)) 
+          {
+            manualScans.delete(key);
+            if (job.report.totalFindings === 0) 
+            {
+              vscode.window.showInformationMessage(
+              'C++ Security: Analysis complete! No security issues found.');
+            }  
+          }
+
           output.appendLine(`[scan] ${doc.fileName} | version ${version} | ${job.report.totalFindings} findings | copies: ${path.join(storage, 'snapshots', job.key)}`);
         } catch (error) {
           if (current(doc, version)) {
@@ -126,7 +145,9 @@ async function activate(context) {
     vscode.commands.registerCommand('cppSecurity.scan', () => {
       const doc = vscode.window.activeTextEditor?.document;
       if (!doc || !isCpp(doc)) return vscode.window.showInformationMessage('Open a C++ document, then select Analyze.');
-      errorNotified = false; enqueue(doc, true);
+      errorNotified = false;
+      manualScans.add(doc.uri.toString());
+      enqueue(doc, true);
     }),
     vscode.commands.registerCommand('cppSecurity.website', async () => {
       const value = configuration().get('websiteUrl', 'https://example.com');
