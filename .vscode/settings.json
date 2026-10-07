@@ -1,4 +1,4 @@
 {
   "cppSecurity.scanIntervalMs": 500,
-  "cppSecurity.websiteUrl": "https://example.com"
+  "cppSecurity.websiteUrl": "https://softwaresecuritytesting.netlify.app/"
 }
