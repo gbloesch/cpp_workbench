@@ -54,7 +54,7 @@ int main() {
         
         size_t total=findings.items().size(); Json rows=Json::array();
         
-        for(const auto& type:{"memory-leak","sql-injection"}) for(const auto& location:Locations) 
+        for(const auto& type:{"memory-leak","sql-injection","integer-overflow"}) for(const auto& location:Locations) 
         {
             int count=counts[std::string(type)+":"+location],denom=byType[type];
             Json row=Json::object(); row["type"]=type; row["location"]=location; row["count"]=count;
@@ -64,7 +64,7 @@ int main() {
         }
         
         Json result=Json::object(); result["schemaVersion"]=1; result["totalFindings"]=total;
-        result["memoryLeakCount"]=byType["memory-leak"]; result["sqlInjectionCount"]=byType["sql-injection"];
+        result["memoryLeakCount"]=byType["memory-leak"]; result["sqlInjectionCount"]=byType["sql-injection"]; result["integerOverflowCount"]=byType["integer-overflow"];
         result["locationBasis"]="innermost recognized construct at the finding's primary source location; memory leaks use the allocation site";
         result["rows"]=rows; result["findings"]=findings; result["analysis"]=req["analysis"];
         
