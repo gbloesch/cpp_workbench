@@ -5,11 +5,11 @@ const percentage = (n, d) => d ? Math.round(10000 * n / d) / 100 : 0;
 function aggregate(reports, statuses = []) {
   const documents = [...reports].sort((a, b) => a.filePath.localeCompare(b.filePath));
   const findings = documents.flatMap(d => d.findings.map(f => ({ ...f, filePath: d.filePath, documentUri: d.documentUri, documentVersion: d.documentVersion })));
-  const totals = { 'memory-leak': 0, 'sql-injection': 0 };
+  const totals = { 'memory-leak': 0, 'sql-injection': 0, 'integer-overflow': 0 };
   const counts = new Map();
   // Sum C++-produced category counts; do not reclassify code in JavaScript.
   for (const d of documents) {
-    totals['memory-leak'] += d.memoryLeakCount; totals['sql-injection'] += d.sqlInjectionCount;
+    totals['memory-leak'] += d.memoryLeakCount; totals['sql-injection'] += d.sqlInjectionCount; totals['integer-overflow'] += d.integerOverflowCount || 0;
     for (const row of d.rows) { const key = `${row.type}:${row.location}`; counts.set(key, (counts.get(key) || 0) + row.count); }
   }
   const total = findings.length;
@@ -20,8 +20,8 @@ function aggregate(reports, statuses = []) {
   return {
     schemaVersion: 1, generatedAt: new Date().toISOString(),
     scope: 'latest-completed-scan-of-currently-open-cpp-documents',
-    counting: { unit: 'distinct finding in the current document version', primaryLocation: 'innermost recognized construct; memory leaks use the allocation site', percentOfTypeDenominator: 'all findings of the same type', percentOfAllDenominator: 'all findings of both types', repeatedScansAccumulate: false },
-    totals: { documents: documents.length, findings: total, memoryLeaks: totals['memory-leak'], sqlInjections: totals['sql-injection'] },
+    counting: { unit: 'distinct finding in the current document version', primaryLocation: 'innermost recognized construct; memory leaks use the allocation site', percentOfTypeDenominator: 'all findings of the same type', percentOfAllDenominator: 'all findings across all types', repeatedScansAccumulate: false },
+    totals: { documents: documents.length, findings: total, memoryLeaks: totals['memory-leak'], sqlInjections: totals['sql-injection'], integerOverflows: totals['integer-overflow'] },
     rows, findings, documents, documentStatuses: statuses
   };
 }
@@ -35,10 +35,10 @@ function renderPatterns(report) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline';"><title>Security Patterns</title><style>
   body{font-family:var(--vscode-font-family,system-ui);color:var(--vscode-foreground,#222);background:var(--vscode-editor-background,#fff);padding:24px;max-width:1100px;margin:auto;line-height:1.5}h1{margin-bottom:4px}h2{margin-top:30px}.muted{opacity:.8}.cards{display:flex;flex-wrap:wrap;gap:16px;margin:24px 0}.card{padding:14px 22px;border:1px solid var(--vscode-panel-border,#aaa);border-radius:6px}.card strong{display:block;font-size:28px}table{border-collapse:collapse;width:100%;margin:14px 0 22px}th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--vscode-panel-border,#ccc)}th{font-weight:600}td:not(:first-child){font-variant-numeric:tabular-nums}code{font-family:var(--vscode-editor-font-family,monospace)}li{margin-bottom:8px}.notice{padding:12px;border-left:3px solid var(--vscode-editorWarning-foreground,#a66b00);background:var(--vscode-textBlockQuote-background,#8881)}.path{overflow-wrap:anywhere}small{opacity:.85}details{margin-top:20px}
   </style></head><body><h1>Security Patterns</h1><p class="muted">Current findings across ${total.documents} analyzed open C++ document(s). Updated ${e(new Date(report.generatedAt).toLocaleString())}.</p>
-  <div class="cards"><div class="card"><strong>${total.findings}</strong>Total findings</div><div class="card"><strong>${total.memoryLeaks}</strong>Possible memory leaks</div><div class="card"><strong>${total.sqlInjections}</strong>Possible SQL injections</div></div>
+  <div class="cards"><div class="card"><strong>${total.findings}</strong>Total findings</div><div class="card"><strong>${total.memoryLeaks}</strong>Possible memory leaks</div><div class="card"><strong>${total.sqlInjections}</strong>Possible SQL injections</div><div class="card"><strong>${total.integerOverflows}</strong>Potential integer overflows</div></div>
   <p class="notice">These are heuristic review findings, not verified vulnerabilities or a security certification. Zero findings means no supported rule matched. Each finding is counted once under its innermost recognized construct. Memory findings are grouped by allocation location; the possible exit path appears in the detail.</p>
   ${statuses.length ? `<h2>Scan status</h2><ul>${statuses.map(s => `<li class="path">${e(s.filePath)} — ${e(s.state)}${s.message ? ': ' + e(s.message) : ''}</li>`).join('')}</ul>` : ''}
-  <h2>Memory leaks by location</h2>${table('memory-leak')}<h2>SQL injection by location</h2>${table('sql-injection')}
+  <h2>Memory leaks by location</h2>${table('memory-leak')}<h2>SQL injection by location</h2>${table('sql-injection')}<h2>Integer overflow by location</h2>${table('integer-overflow')}
   <p><b>% of this type</b> = count ÷ findings of the same type × 100. <b>% of all findings</b> = count ÷ all findings × 100. These percentages describe reported findings, not the percentage of source lines that are flawed. Zero denominators display 0%. Rounded columns may differ slightly from 100%.</p>
   <p>Repeated timer scans replace the previous result. This view does not count keystrokes, historical mistakes, closed files, or individual people.</p>
   <h2>Finding details</h2>${report.findings.length ? `<ol>${report.findings.map(f => `<li><strong>${e(f.type)} · ${e(labels[f.primaryContext] || f.primaryContext)}</strong><br><span class="path">${e(f.filePath)}:${f.line}</span><br>${e(f.message)}<br><small>Nested location: ${e(f.contexts.join(' → '))}. ${e(f.evidence)}${f.relatedLocation ? ` Possible exit/overwrite: line ${f.relatedLocation.line}, ${e((f.relatedLocation.contexts || []).join(' → '))}.` : ''}</small></li>`).join('')}</ol>` : '<p>No findings in the completed scans currently shown.</p>'}
