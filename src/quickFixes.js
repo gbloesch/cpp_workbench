@@ -88,7 +88,7 @@ function constantOverflowEdit(vscode, document, diagnostic) {
   if (document.languageId !== 'cpp' || !diagnostic.range) return null;
   const lineNumber = diagnostic.range.start.line;
   const line = document.lineAt(lineNumber).text;
-  const pattern = /^(\\s*)int\\s+([A-Za-z_]\\w*)\\s*=\\s*(\\d+)\\s*([+*\\-])\\s*(\\d+)\\s*;/;
+  const pattern = /^(\s*)int\s+([A-Za-z_]\w*)\s*=\s*(\d+)\s*([+*\-])\s*(\d+)\s*;/;
   const match = pattern.exec(line);
   if (!match) return null;
   if (diagnostic.range.start.character < match.index ||
