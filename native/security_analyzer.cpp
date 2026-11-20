@@ -1,4 +1,5 @@
 #include "cpp_model.hpp"
+#include "integer_overflow.hpp"
 #include <optional>
 
 struct Allocation { int token; std::string variable, family; };
@@ -21,7 +22,7 @@ class SecurityAnalyzer {
     size_t steps=0;
     bool truncated=false;
     static constexpr size_t MaxPaths=64,MaxSteps=80000;
-    bool sqlEnabled=true,memoryEnabled=true;
+    bool sqlEnabled=true,memoryEnabled=true,integerEnabled=true;
     std::map<std::string,int> sinks;
     std::set<std::string> sources;
     std::set<std::string> allocators={"malloc","calloc","realloc"};
@@ -29,12 +30,12 @@ class SecurityAnalyzer {
     std::string word(int i) const { return model.at(i); }
     void emit(const std::string& type,const std::string& rule,int token,const std::string& message,const std::string& evidence,int related=-1) {
         if(token<0||token>=(int)model.tokens.size()) return;
-        if((type=="memory-leak"&&!memoryEnabled)||(type=="sql-injection"&&!sqlEnabled)) return;
+        if((type=="memory-leak"&&!memoryEnabled)||(type=="sql-injection"&&!sqlEnabled)||(type=="integer-overflow"&&!integerEnabled)) return;
         std::string key=rule+":"+std::to_string(model.start(token));
         if(!emitted.insert(key).second) return;
         Json f=Json::object(); f["id"]=key; f["type"]=type; f["ruleId"]=rule;
         f["severity"]="warning"; f["confidence"]="heuristic";
-        f["cwe"]=type=="memory-leak"?"CWE-401":"CWE-89";
+        f["cwe"]=type=="memory-leak"?"CWE-401":type=="integer-overflow"?"CWE-190":"CWE-89";
         f["startByte"]=model.start(token); f["endByte"]=model.end(token);
         f["line"]=model.line(model.start(token)); f["message"]=message; f["evidence"]=evidence;
         if(related>=0) { Json r=Json::object(); r["startByte"]=model.start(related); r["endByte"]=model.end(related); r["line"]=model.line(model.start(related)); r["message"]="Possible path exits or loses ownership here."; f["relatedLocation"]=r; }
@@ -225,11 +226,14 @@ class SecurityAnalyzer {
     }
 public:
     SecurityAnalyzer(const std::string& source,const Json& r):model(source),rules(r) {
-        sqlEnabled=rules["sqlEnabled"].boolean(true); memoryEnabled=rules["memoryEnabled"].boolean(true);
+        sqlEnabled=rules["sqlEnabled"].boolean(true); memoryEnabled=rules["memoryEnabled"].boolean(true); integerEnabled=rules["integerEnabled"].boolean(true);
         if(rules["sqlSinks"].isArray()) for(const auto& x:rules["sqlSinks"].items()) sinks[x["name"].str()]=(int)x["queryArgument"].number();
         if(rules["inputFunctions"].isArray()) for(const auto& x:rules["inputFunctions"].items()) sources.insert(x.str());
     }
     Json analyze() {
+        if(integerEnabled) scanIntegerOverflow(model, [this](int token,const std::string& rule,const std::string& message,const std::string& evidence) {
+            emit("integer-overflow",rule,token,message,evidence);
+        });
         for(const auto& f:model.functions) {
             State s;
             // A configurable assumption, recorded in every parameter-derived finding.

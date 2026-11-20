@@ -72,7 +72,7 @@ async function activate(context)
       const range = new vscode.Range(doc.positionAt(byteOffsetToUtf16(source, f.startByte)), doc.positionAt(byteOffsetToUtf16(source, f.endByte)));
       const diagnostic = new vscode.Diagnostic(range, f.message, vscode.DiagnosticSeverity.Warning);
       diagnostic.source = 'C++ Security Workbench';
-      diagnostic.code = { value: f.ruleId, target: vscode.Uri.parse(f.cwe === 'CWE-401' ? 'https://cwe.mitre.org/data/definitions/401.html' : 'https://cwe.mitre.org/data/definitions/89.html') };
+      diagnostic.code = { value: f.ruleId, target: vscode.Uri.parse(f.cwe === 'CWE-401' ? 'https://cwe.mitre.org/data/definitions/401.html' : f.cwe === 'CWE-190' ? 'https://cwe.mitre.org/data/definitions/190.html' : 'https://cwe.mitre.org/data/definitions/89.html') };
       if (f.relatedLocation) {
         const r = f.relatedLocation;
         const related = new vscode.Range(doc.positionAt(byteOffsetToUtf16(source, r.startByte)), doc.positionAt(byteOffsetToUtf16(source, r.endByte)));

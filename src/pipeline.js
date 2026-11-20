@@ -7,7 +7,7 @@ const { runNative } = require('./nativeRunner');
 function validateFindings(findings, bytes) {
   if (!Array.isArray(findings) || findings.length > 10000) throw new Error('Invalid findings array');
   for (const f of findings) {
-    if (!['memory-leak', 'sql-injection'].includes(f.type) || !Number.isInteger(f.startByte) || !Number.isInteger(f.endByte) || f.startByte < 0 || f.endByte < f.startByte || f.endByte > bytes || typeof f.message !== 'string' || typeof f.ruleId !== 'string') throw new Error('Invalid finding from native analyzer');
+    if (!['memory-leak', 'sql-injection', 'integer-overflow'].includes(f.type) || !Number.isInteger(f.startByte) || !Number.isInteger(f.endByte) || f.startByte < 0 || f.endByte < f.startByte || f.endByte > bytes || typeof f.message !== 'string' || typeof f.ruleId !== 'string') throw new Error('Invalid finding from native analyzer');
   }
 }
 function documentKey(uri) { return crypto.createHash('sha256').update(uri).digest('hex').slice(0, 24); }
