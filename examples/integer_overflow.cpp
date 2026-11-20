@@ -1,4 +1,3 @@
-// Open in the VS Code extension to see signed-integer overflow diagnostics.
 int add(int a, int b) {
     int result = a + b; // Possible overflow
     return result;
