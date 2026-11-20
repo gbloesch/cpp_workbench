@@ -81,15 +81,38 @@ function renderGuidance(type, findingMessage = '') {
     'This recommendation is informational. The extension has not changed your source file.'
   ].join('\n');
 }
+// Deliberately narrow: only constant arithmetic in a simple int declaration.
+// Converts both the destination and arithmetic into 64-bit signed long long.
+// No action is offered for unknown values, SQL, or memory ownership.
+function constantOverflowEdit(vscode, document, diagnostic) {
+  if (document.languageId !== 'cpp' || !diagnostic.range) return null;
+  const lineNumber = diagnostic.range.start.line;
+  const line = document.lineAt(lineNumber).text;
+  const pattern = /^(\\s*)int\\s+([A-Za-z_]\\w*)\\s*=\\s*(\\d+)\\s*([+*\\-])\\s*(\\d+)\\s*;/;
+  const match = pattern.exec(line);
+  if (!match) return null;
+  if (diagnostic.range.start.character < match.index ||
+      diagnostic.range.start.character >= match[0].length) return null;
+  let left, right;
+  try { left = BigInt(match[3]); right = BigInt(match[5]); }
+  catch { return null; }
+  const min = -2147483648n, max = 2147483647n;
+  // Only transform int32 nonnegative literals; wider literal semantics need review.
+  if (left > max || right > max) return null;
+  const result = match[4] === '+' ? left + right
+    : match[4] === '-' ? left - right : left * right;
+  if (result >= min && result <= max) return null;
+  if (result < -(2n ** 63n) || result > (2n ** 63n - 1n)) return null;
+  const replacement = match[1] + 'long long ' + match[2] +
+    ' = ' + match[3] + 'LL ' + match[4] + ' ' + match[5] + ';';
+  return {
+    range: new vscode.Range(lineNumber, 0, lineNumber, match[0].length),
+    replacement
+  };
+}
+
 function registerQuickFixes(vscode, context) {
-  const command = 'cppSecurity.reviewQuickFix';
   context.subscriptions.push(
-    vscode.commands.registerCommand(command, async (type, message) => {
-      const markdown = renderGuidance(type, message);
-      if (!markdown) return;
-      const document = await vscode.workspace.openTextDocument({ language: 'markdown', content: markdown });
-      await vscode.window.showTextDocument(document, { viewColumn: vscode.ViewColumn.Beside, preview: true, preserveFocus: false });
-    }),
     vscode.languages.registerCodeActionsProvider(
       { language: 'cpp', scheme: 'file' },
       {
@@ -97,23 +120,18 @@ function registerQuickFixes(vscode, context) {
           const actions = [];
           for (const diagnostic of codeActionContext.diagnostics) {
             if (diagnostic.source !== 'C++ Security Workbench') continue;
-            const type = diagnostic.code && typeof diagnostic.code === 'object'
+            const rule = diagnostic.code && typeof diagnostic.code === 'object'
               ? String(diagnostic.code.value || '') : String(diagnostic.code || '');
-            const findingType = type.startsWith('sql.') ? 'sql-injection'
-              : type.startsWith('memory.') ? 'memory-leak'
-              : type.startsWith('integer.') ? 'integer-overflow' : null;
-            if (!findingType) continue;
+            if (rule !== 'integer.overflow-proven' && rule !== 'integer.overflow-constant') continue;
+            const fix = constantOverflowEdit(vscode, document, diagnostic);
+            if (!fix) continue;
             const action = new vscode.CodeAction(
-              'C++ Security: Review suggested fix (' + findingType + ')',
+              'C++ Security: Use 64-bit arithmetic for this constant expression',
               vscode.CodeActionKind.QuickFix
             );
             action.diagnostics = [diagnostic];
-            action.command = {
-              title: 'Review suggested fix',
-              command,
-              arguments: [findingType, diagnostic.message]
-            };
-            // Do not set an edit: complex security remediation needs human review.
+            action.edit = new vscode.WorkspaceEdit();
+            action.edit.replace(document.uri, fix.range, fix.replacement);
             actions.push(action);
           }
           return actions;
@@ -123,4 +141,4 @@ function registerQuickFixes(vscode, context) {
     )
   );
 }
-module.exports = { getGuidance, renderGuidance, registerQuickFixes };
+module.exports = { getGuidance, renderGuidance, constantOverflowEdit, registerQuickFixes };
