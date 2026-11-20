@@ -108,7 +108,23 @@ class SecurityAnalyzer {
                 auto args=model.args(i+1); int index=sinks[w];
                 if(index>=0&&index<(int)args.size()) {
                     auto q=args[index]; std::string reason=taint(s,q.first,q.second);
-                    if(!reason.empty()) emit("sql-injection","sql.tainted-query",i,"Possible SQL injection: input-derived data reaches the SQL text passed to "+w+". Use a fixed query with bound parameters.",reason);
+                    if(!reason.empty()) {
+                        // Explain the specific data flow without claiming an exploit is proven.
+                        // Query argument positions in the rules are zero-based.
+                        const std::string message =
+                            "Possible SQL injection (CWE-89) in "+w+"(): "
+                            "SQL text may contain untrusted data. "
+                            "Source: "+reason+". "
+                            "Risk: input could change the structure of the SQL command. "
+                            "Fix: use a fixed SQL statement with placeholders and bind values "
+                            "through the database API; do not concatenate input into SQL.";
+                        const std::string evidence =
+                            "Untrusted-data path: "+reason+
+                            " -> query argument "+std::to_string(index+1)+
+                            " of "+w+"(). This is a heuristic warning; confirm whether "
+                            "the value is already safely parameterized.";
+                        emit("sql-injection","sql.tainted-query",i,message,evidence);
+                    }
                 }
             }
             if(w=="delete") release(s,i+1,e);
