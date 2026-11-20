@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { AnalysisPipeline, byteOffsetToUtf16 } = require('./pipeline');
 const { aggregate, renderPatterns } = require('./reports');
+const { registerQuickFixes } = require('./quickFixes');
 
 async function activate(context) 
 {
@@ -13,6 +14,7 @@ async function activate(context)
   status.command = 'cppSecurity.patterns'; status.text = '$(shield) C++ Security'; status.tooltip = 'View security patterns'; status.show();
   
   context.subscriptions.push(output, diagnostics, status);
+  registerQuickFixes(vscode, context);
   // Each VS Code extension host gets its own directory, so two windows do not
   // delete each other's snapshots. Remove only abandoned host sessions.
   
